@@ -1,0 +1,18 @@
+1. when navigating to the app, first the app.component.ts is initialized. For the purposes of logging in, it initializes and injects
+    the AccountService into the app.component.ts as a dependency singleton.
+2. The accountService constructs itself by creating a ReplaySubject<User> object called currentUserSource. Which is essentially a list of 1 that can
+    be replayed. I know there is more to it than that.
+    But that is how I'm looking at it for the time being. It is initially set to null. We then create currentUser$ which is an Observable that is 
+    essentially the same as currentUserSource but is a little more abstract. Essentially, an Observable, is an object that can be observed.
+3. the ngOnInit() runs as soon as the app.component.ts is initialized, calling getUsers(); and setCurrentUser();
+4. setCurrentUser() runs and looks for the current user in the browser's local storage (Inspector tools > application > local storage). It then
+    sets the AccountService accountservice to the user it finds (or null) using the accountservice setCurrentUser(user) which adds the user
+    to the ReplaySubject list we made in step 2. Of course the ReplaySubject value is null if there is no user in local storage.
+----------------------------------break---------------------------------
+5. Assuming there is no user in local data, we must log in. The nav.component.ts is generated right away as the project initializes. The nav component
+    includes the AccountService, which was injected during initialization as a singleton.
+6. When we press the login button of the nav.component.html, we call the login function in the nav.component.ts file. That uses the form entries that
+    are binded to the model variable in the nav.component.ts file ("[(ngModel)]="model.username""). We subscribe to the response and set the loggedin
+    flag to true. The accountservice object handles the login.
+7. The account service login will take the model, grabbed by the nav.component.ts, and send an https request. The response, if true, is stored in local
+    storage.
